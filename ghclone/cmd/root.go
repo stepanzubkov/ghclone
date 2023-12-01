@@ -21,6 +21,9 @@ import (
     "fmt"
 
 	"github.com/spf13/cobra"
+    "net/http"
+
+    "ghclone/services"
 )
 
 
@@ -32,9 +35,29 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
-        if (len(args) > 1) {
+        if len(args) != 1 {
             fmt.Println("Only one argument is allowed!")
+            return
         }
+        var github_username string = args[0]
+        response, err := http.Get("https://api.github.com/users/" + github_username + "/repos")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        if response.StatusCode == 404 {
+            fmt.Println("User not found!")
+            return
+        }
+        repos := services.DecodeJsonResponse(response)
+        fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
+        var answer string
+        fmt.Scanln(&answer)
+        if answer != "y" {
+            return
+        }
+        current_dir, err := os.Getwd()
+        services.CloneRepositories(repos, current_dir)
     },
 }
 
