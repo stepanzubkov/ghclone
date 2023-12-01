@@ -35,6 +35,11 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
+        dir, err := cmd.Flags().GetString("dir")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
         if len(args) != 1 {
             fmt.Println("Only one argument is allowed!")
             return
@@ -56,8 +61,14 @@ Repositories can be filtered.`,
         if answer != "y" {
             return
         }
-        current_dir, err := os.Getwd()
-        services.CloneRepositories(repos, current_dir)
+        if dir == "" {
+            dir, err = os.Getwd()
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+        }
+        services.CloneRepositories(repos, dir)
     },
 }
 
@@ -77,6 +88,7 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ghclone.yaml)")
     rootCmd.Flags().BoolP("all", "a", true, "Clones all user's repositories.")
+    rootCmd.Flags().StringP("dir", "d", "", "Specify a directory (default to current working directory)")
 
 }
 

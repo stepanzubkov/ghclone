@@ -17,12 +17,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package services
 
 import (
-    "os"
-    "path"
-    "net/http"
-    "encoding/json"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+	"path"
 
-    "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5"
 )
 
 
@@ -39,10 +40,13 @@ func CloneRepositories(repos []any, directory string) error {
     for _, value := range repos {
         repo := value.(map[string]any)
         clone_url := repo["clone_url"]
-        git.PlainClone(path.Join(directory, repo["name"].(string)), false, &git.CloneOptions{
+        _, err := git.PlainClone(path.Join(directory, repo["name"].(string)), false, &git.CloneOptions{
             URL: clone_url.(string),
             Progress: os.Stdout,
         })
+        if err != nil {
+            fmt.Println(err)
+        }
     }
     return nil
 }
