@@ -14,38 +14,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 package services
 
 import (
-	"encoding/json"
-	"net/http"
-	"os"
-	"path"
-
-	"github.com/go-git/go-git/v5"
+    "time"
 )
 
 
 
-func DecodeJsonResponse(response *http.Response) []any {
-    var result []any
-    decoder := json.NewDecoder(response.Body)
-    decoder.Decode(&result)
-    return result
-}
-
-
-func CloneRepositories(repos []any, directory string) error {
+func GetLatestRepository(repos []any) (map[string]any, error) {
+    var latest_repo map[string]any
+    var latest_created_at = time.Unix(0, 0)
     for _, value := range repos {
         repo := value.(map[string]any)
-        clone_url := repo["clone_url"]
-        _, err := git.PlainClone(path.Join(directory, repo["name"].(string)), false, &git.CloneOptions{
-            URL: clone_url.(string),
-            Progress: os.Stdout,
-        })
+        repo_created_at, err := time.Parse("2006-01-02T15:04:05Z", repo["created_at"].(string))
         if err != nil {
-            return err
+            return nil, err
+        }
+        if repo_created_at.Compare(latest_created_at) == 1 {
+            latest_repo = repo
         }
     }
-    return nil
+    return latest_repo, nil
+
 }

@@ -40,6 +40,11 @@ Repositories can be filtered.`,
             fmt.Println(err)
             return
         }
+        latest, err := cmd.Flags().GetBool("latest")
+        if err != nil {
+            fmt.Println(err)
+        }
+
         if len(args) != 1 {
             fmt.Println("Only one argument is allowed!")
             return
@@ -55,6 +60,14 @@ Repositories can be filtered.`,
             return
         }
         repos := services.DecodeJsonResponse(response)
+        if latest {
+            latest_repo, err := services.GetLatestRepository(repos)
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+            repos = []any{latest_repo}
+        }
         fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
         var answer string
         fmt.Scanln(&answer)
@@ -68,6 +81,7 @@ Repositories can be filtered.`,
                 return
             }
         }
+
         services.CloneRepositories(repos, dir)
     },
 }
@@ -89,6 +103,7 @@ func init() {
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ghclone.yaml)")
     rootCmd.Flags().BoolP("all", "a", true, "Clones all user's repositories.")
     rootCmd.Flags().StringP("dir", "d", "", "Specify a directory (default to current working directory)")
+    rootCmd.Flags().BoolP("latest", "l", false, "Clone 1 latest repository.")
 
 }
 
