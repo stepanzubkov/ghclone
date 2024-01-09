@@ -35,21 +35,25 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
-        dir, err := cmd.Flags().GetString("dir")
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
-        latest, err := cmd.Flags().GetBool("latest")
-        if err != nil {
-            fmt.Println(err)
-        }
-
-        if len(args) != 1 {
-            fmt.Println("Only one argument is allowed!")
-            return
-        }
-        var github_username string = args[0]
+        // dir, err := cmd.Flags().GetString("dir")
+        // if err != nil {
+        //     fmt.Println(err)
+        //     return
+        // }
+        // latest, err := cmd.Flags().GetBool("latest")
+        // if err != nil {
+        //     fmt.Println(err)
+        // }
+        //
+        // if len(args) != 1 {
+        //     fmt.Println("Only one argument is allowed!")
+        //     return
+        // }
+        // var github_username string = args[0]
+        root_args, err := services.ParseRootCmdArgs(cmd, args)
+        github_username := root_args.Name
+        dir := root_args.Dir
+        latest := root_args.Latest
         response, err := http.Get("https://api.github.com/users/" + github_username + "/repos")
         if err != nil {
             fmt.Println(err)

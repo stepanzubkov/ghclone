@@ -1,8 +1,6 @@
 /*
 Copyright © 2023 Stepan Zubkov stepanzubkov@florgon.com
 
-Contains arguments model for root command (cmd/root.go)
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -16,12 +14,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package models
+package services
+import (
+    "errors"
 
-type RootArgs struct {
-    // positional args
-    Name string
-    // flags
-    Dir string
-    Latest bool
+    "github.com/spf13/cobra"
+    "ghclone/models"
+)
+
+func ParseRootCmdArgs(cmd *cobra.Command, args []string) (*models.RootArgs, error) {
+    dir, err := cmd.Flags().GetString("dir")
+    if err != nil {
+        return nil, err
+    }
+    latest, err := cmd.Flags().GetBool("latest")
+    if err != nil {
+        return nil, err
+    }
+
+    if len(args) != 1 {
+        return nil, errors.New("Only one argument is allowed!")
+    }
+    var github_username string = args[0]
+
+    var root_args models.RootArgs = models.RootArgs{Name: github_username, Dir: dir, Latest: latest}
+    return &root_args, nil
 }
