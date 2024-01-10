@@ -18,7 +18,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package services
 
 import (
-    "fmt"
     "time"
 )
 
@@ -33,7 +32,6 @@ func GetLatestRepository(repos []any) (map[string]any, error) {
         if err != nil {
             return nil, err
         }
-        fmt.Println(repo_created_at)
         if repo_created_at.Compare(latest_created_at) == 1 {
             latest_repo = repo
             latest_created_at = repo_created_at

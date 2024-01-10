@@ -35,26 +35,13 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
-        // dir, err := cmd.Flags().GetString("dir")
-        // if err != nil {
-        //     fmt.Println(err)
-        //     return
-        // }
-        // latest, err := cmd.Flags().GetBool("latest")
-        // if err != nil {
-        //     fmt.Println(err)
-        // }
-        //
-        // if len(args) != 1 {
-        //     fmt.Println("Only one argument is allowed!")
-        //     return
-        // }
-        // var github_username string = args[0]
         root_args, err := services.ParseRootCmdArgs(cmd, args)
-        github_username := root_args.Name
-        dir := root_args.Dir
-        latest := root_args.Latest
-        response, err := http.Get("https://api.github.com/users/" + github_username + "/repos")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+
+        response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
         if err != nil {
             fmt.Println(err)
             return
@@ -64,7 +51,7 @@ Repositories can be filtered.`,
             return
         }
         repos := services.DecodeJsonResponse(response)
-        if latest {
+        if root_args.Latest {
             latest_repo, err := services.GetLatestRepository(repos)
             if err != nil {
                 fmt.Println(err)
@@ -78,15 +65,15 @@ Repositories can be filtered.`,
         if answer != "y" {
             return
         }
-        if dir == "" {
-            dir, err = os.Getwd()
+        if root_args.Dir == "" {
+            root_args.Dir, err = os.Getwd()
             if err != nil {
                 fmt.Println(err)
                 return
             }
         }
 
-        services.CloneRepositories(repos, dir)
+        services.CloneRepositories(repos, root_args.Dir)
     },
 }
 
@@ -106,7 +93,7 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ghclone.yaml)")
     rootCmd.Flags().BoolP("all", "a", true, "Clones all user's repositories.")
-    rootCmd.Flags().StringP("dir", "d", "", "Specify a directory (default to current working directory)")
+    rootCmd.Flags().StringP("dir", "d", "", "Specify a root_args.Directory (default to current working root_args.Directory)")
     rootCmd.Flags().BoolP("latest", "l", false, "Clone 1 latest repository.")
 
 }
