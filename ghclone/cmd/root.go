@@ -73,7 +73,11 @@ Repositories can be filtered.`,
             }
         }
 
-        services.CloneRepositories(repos, root_args.Dir)
+        err = services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
     },
 }
 
@@ -95,6 +99,7 @@ func init() {
     rootCmd.Flags().BoolP("all", "a", true, "Clones all user's repositories.")
     rootCmd.Flags().StringP("dir", "d", "", "Specify a root_args.Directory (default to current working root_args.Directory)")
     rootCmd.Flags().BoolP("latest", "l", false, "Clone 1 latest repository.")
+    rootCmd.Flags().BoolP("ssh", "s", false, "Clone via ssh")
 
 }
 

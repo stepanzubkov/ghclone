@@ -32,11 +32,16 @@ func ParseRootCmdArgs(cmd *cobra.Command, args []string) (*models.RootArgs, erro
         return nil, err
     }
 
+    ssh, err := cmd.Flags().GetBool("ssh")
+    if err != nil {
+        return nil, err
+    }
+
     if len(args) != 1 {
         return nil, errors.New("Only one argument is allowed!")
     }
     var github_username string = args[0]
 
-    var root_args models.RootArgs = models.RootArgs{Name: github_username, Dir: dir, Latest: latest}
+    var root_args models.RootArgs = models.RootArgs{Name: github_username, Dir: dir, Latest: latest, Ssh: ssh}
     return &root_args, nil
 }
