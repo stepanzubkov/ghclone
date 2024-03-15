@@ -18,13 +18,16 @@ package services
 
 import (
 	"encoding/json"
+	"io/fs"
 	"net/http"
 	"os"
 	"path"
+    "strings"
+	"path/filepath"
+    "fmt"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
-
 )
 
 
@@ -45,7 +48,7 @@ func CloneRepositories(repos []any, directory string, ssh bool) {
         var err error
         if (ssh) {
             clone_url = repo["ssh_url"].(string)
-            public_keys := GetPublicKeys()
+            public_keys := getPublicKeys()
             _, err = git.PlainClone(path.Join(directory, repo["name"].(string)), false, &git.CloneOptions{
                 Auth: public_keys,
                 URL: clone_url,
@@ -62,15 +65,36 @@ func CloneRepositories(repos []any, directory string, ssh bool) {
     }
 }
 
-func GetPublicKeys() *ssh.PublicKeys {
-    homedir, _ := os.UserHomeDir()
-    private_key_file := path.Join(homedir, ".ssh/id_ed25519")
+func getPublicKeys() *ssh.PublicKeys {
+    private_key_file := findSshKeyFile()
     _, err := os.Stat(private_key_file)
 	if err != nil {
-		Error("Ssh id file is not found!")
+		Error("Ssh private key file is not found!")
 	}
 
 	public_keys, err := ssh.NewPublicKeysFromFile("git", private_key_file, "")
     CheckIfError(err)
     return public_keys
+}
+
+func findSshKeyFile() string {
+    homedir, _ := os.UserHomeDir()
+    files := glob(path.Join(homedir, ".ssh"), func(s string) bool {
+        return strings.HasPrefix(filepath.Base(s), "id_") && filepath.Ext(s) == ""
+    })
+    if len(files) != 1 {
+        Error("Can't choose ssh private key file!")
+    }
+    return files[0]
+}
+
+func glob(root string, fn func(string)bool) []string {
+   var files []string
+   filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
+      if fn(s) {
+         files = append(files, s)
+      }
+      return nil
+   })
+   return files
 }
