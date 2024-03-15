@@ -23,20 +23,18 @@ import (
 
 
 
-func GetLatestRepository(repos []any) (map[string]any, error) {
+func GetLatestRepository(repos []any) map[string]any {
     var latest_repo map[string]any
     var latest_created_at = time.Unix(0, 0)
     for _, value := range repos {
         repo := value.(map[string]any)
         repo_created_at, err := time.Parse("2006-01-02T15:04:05Z", repo["created_at"].(string))
-        if err != nil {
-            return nil, err
-        }
+        CheckIfError(err)
         if repo_created_at.Compare(latest_created_at) == 1 {
             latest_repo = repo
             latest_created_at = repo_created_at
         }
     }
-    return latest_repo, nil
+    return latest_repo
 
 }

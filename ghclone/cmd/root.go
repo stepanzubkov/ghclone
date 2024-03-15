@@ -35,28 +35,16 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
-        root_args, err := services.ParseRootCmdArgs(cmd, args)
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
+        root_args := services.ParseRootCmdArgs(cmd, args)
 
         response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
+        services.CheckIfError(err)
         if response.StatusCode == 404 {
-            fmt.Println("User not found!")
-            return
+            services.Error("User not found!")
         }
         repos := services.DecodeJsonResponse(response)
         if root_args.Latest {
-            latest_repo, err := services.GetLatestRepository(repos)
-            if err != nil {
-                fmt.Println(err)
-                return
-            }
+            latest_repo := services.GetLatestRepository(repos)
             repos = []any{latest_repo}
         }
         fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
@@ -67,17 +55,10 @@ Repositories can be filtered.`,
         }
         if root_args.Dir == "" {
             root_args.Dir, err = os.Getwd()
-            if err != nil {
-                fmt.Println(err)
-                return
-            }
+            services.CheckIfError(err)
         }
 
-        err = services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
+        services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
     },
 }
 

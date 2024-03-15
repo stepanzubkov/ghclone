@@ -17,7 +17,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package services
 
 import (
-    "errors"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -25,6 +24,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
+
 )
 
 
@@ -37,7 +37,7 @@ func DecodeJsonResponse(response *http.Response) []any {
 }
 
 
-func CloneRepositories(repos []any, directory string, ssh bool) error {
+func CloneRepositories(repos []any, directory string, ssh bool) {
     for _, value := range repos {
         repo := value.(map[string]any)
 
@@ -45,10 +45,7 @@ func CloneRepositories(repos []any, directory string, ssh bool) error {
         var err error
         if (ssh) {
             clone_url = repo["ssh_url"].(string)
-            public_keys, err_ := GetPublicKeys()
-            if err_ != nil {
-                return err_
-            }
+            public_keys := GetPublicKeys()
             _, err = git.PlainClone(path.Join(directory, repo["name"].(string)), false, &git.CloneOptions{
                 Auth: public_keys,
                 URL: clone_url,
@@ -61,25 +58,19 @@ func CloneRepositories(repos []any, directory string, ssh bool) error {
                 Progress: os.Stdout,
             })
         }
-
-        if err != nil {
-            return err
-        }
+        CheckIfError(err)
     }
-    return nil
 }
 
-func GetPublicKeys() (*ssh.PublicKeys, error) {
+func GetPublicKeys() *ssh.PublicKeys {
     homedir, _ := os.UserHomeDir()
     private_key_file := path.Join(homedir, ".ssh/id_ed25519")
     _, err := os.Stat(private_key_file)
 	if err != nil {
-		return nil, errors.New("Ssh id file is not found!")
+		Error("Ssh id file is not found!")
 	}
 
 	public_keys, err := ssh.NewPublicKeysFromFile("git", private_key_file, "")
-	if err != nil {
-		return nil, err
-	}
-    return public_keys, nil
+    CheckIfError(err)
+    return public_keys
 }

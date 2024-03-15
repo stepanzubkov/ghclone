@@ -16,32 +16,29 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package services
 import (
-    "errors"
-
     "github.com/spf13/cobra"
     "ghclone/models"
 )
 
-func ParseRootCmdArgs(cmd *cobra.Command, args []string) (*models.RootArgs, error) {
+func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
     dir, err := cmd.Flags().GetString("dir")
-    if err != nil {
-        return nil, err
-    }
+    CheckIfError(err)
     latest, err := cmd.Flags().GetBool("latest")
-    if err != nil {
-        return nil, err
-    }
+    CheckIfError(err)
 
     ssh, err := cmd.Flags().GetBool("ssh")
-    if err != nil {
-        return nil, err
-    }
+    CheckIfError(err)
 
     if len(args) != 1 {
-        return nil, errors.New("Only one argument is allowed!")
+        Error("Only one argument is allowed!")
     }
     var github_username string = args[0]
 
-    var root_args models.RootArgs = models.RootArgs{Name: github_username, Dir: dir, Latest: latest, Ssh: ssh}
-    return &root_args, nil
+    var root_args models.RootArgs = models.RootArgs{
+        Name: github_username,
+        Dir: dir,
+        Latest: latest,
+        Ssh: ssh,
+    }
+    return &root_args
 }
