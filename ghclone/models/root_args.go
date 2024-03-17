@@ -25,4 +25,5 @@ type RootArgs struct {
     Dir string
     Latest bool
     Ssh bool
+    Choose bool
 }

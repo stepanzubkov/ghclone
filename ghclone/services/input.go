@@ -15,33 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package services
+
 import (
-    "github.com/spf13/cobra"
-    "ghclone/models"
+	"bufio"
+	"os"
+	"strings"
+    "strconv"
 )
 
-func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
-    dir, err := cmd.Flags().GetString("dir")
+func SelectFromList(length int) []int {
+    reader := bufio.NewReader(os.Stdin)
+    line, err := reader.ReadString('\n')
     CheckIfError(err)
-    latest, err := cmd.Flags().GetBool("latest")
-    CheckIfError(err)
-    choose, err := cmd.Flags().GetBool("choose")
-    CheckIfError(err)
+    line = strings.TrimSpace(line)
 
-    ssh, err := cmd.Flags().GetBool("ssh")
-    CheckIfError(err)
-
-    if len(args) != 1 {
-        Error("Only one argument is allowed!")
+    indexes := strings.Split(line, " ")
+    var int_indexes []int
+    for _, index := range indexes {
+        int_index, err := strconv.ParseInt(index, 10, 32)
+        if err != nil {
+            Error("Index '%s' is not integer!", index)
+        }
+        if int_index < 0 || int(int_index) > length-1 {
+            Error("Index %s is out of range", index)
+        }
+        int_indexes = append(int_indexes, int(int_index))
     }
-    var github_username string = args[0]
-
-    var root_args models.RootArgs = models.RootArgs{
-        Name: github_username,
-        Dir: dir,
-        Latest: latest,
-        Ssh: ssh,
-        Choose: choose,
-    }
-    return &root_args
+    return int_indexes
 }

@@ -35,6 +35,8 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
+        list := services.SelectFromList(17)
+        return
         root_args := services.ParseRootCmdArgs(cmd, args)
 
         response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
@@ -43,9 +45,19 @@ Repositories can be filtered.`,
             services.Error("User not found!")
         }
         repos := services.DecodeJsonResponse(response)
+        if root_args.Latest && root_args.Choose {
+            services.Error("Pass --latest or --choose flag, not both!")
+        }
         if root_args.Latest {
             latest_repo := services.GetLatestRepository(repos)
             repos = []any{latest_repo}
+        }
+        if root_args.Choose {
+            for index, value := range repos {
+                repo := value.(map[string]any)
+                fmt.Printf("(%n) %s", index, repo["name"].(string))
+            }
+            fmt.Print("Choose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
         }
         fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
         var answer string
@@ -78,9 +90,10 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ghclone.yaml)")
     rootCmd.Flags().BoolP("all", "a", true, "Clones all user's repositories.")
-    rootCmd.Flags().StringP("dir", "d", "", "Specify a root_args.Directory (default to current working root_args.Directory)")
+    rootCmd.Flags().StringP("dir", "d", "", "Specify a directory to clone (defaults to current working directory)")
     rootCmd.Flags().BoolP("latest", "l", false, "Clone 1 latest repository.")
     rootCmd.Flags().BoolP("ssh", "s", false, "Clone via ssh")
+    rootCmd.Flags().BoolP("choose", "c", false, "Choose multiple repos to clone from list")
 
 }
 
