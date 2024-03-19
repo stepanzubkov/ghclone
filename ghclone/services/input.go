@@ -18,9 +18,10 @@ package services
 
 import (
 	"bufio"
+	"ghclone/general"
 	"os"
+	"strconv"
 	"strings"
-    "strconv"
 )
 
 func SelectFromList(length int) []int {
@@ -30,8 +31,38 @@ func SelectFromList(length int) []int {
     line = strings.TrimSpace(line)
 
     indexes := strings.Split(line, " ")
+    return general.RemoveDuplicateValues(strSliceToIntSlice(length, indexes))
+}
+
+
+func parseIndexesRange(length int, indexes_range string) []int {
+    range_borders := strings.Split(indexes_range, "-")
+    if len(range_borders) != 2 {
+        Error("Invalid indexes range: '%s'", indexes_range)
+    }
+    int_range_borders := strSliceToIntSlice(length, range_borders)
+
+    if int_range_borders[1] < int_range_borders[0] {
+        temp := int_range_borders[1]
+        int_range_borders[1] = int_range_borders[0]
+        int_range_borders[0] = temp
+    }
+
+    var expanded_range []int
+    for i:=int_range_borders[0]; i<=int_range_borders[1]; i++ {
+        expanded_range = append(expanded_range, i)
+    }
+    return expanded_range
+}
+
+
+func strSliceToIntSlice(length int, str_slice []string) []int {
     var int_indexes []int
-    for _, index := range indexes {
+    for _, index := range str_slice {
+        if strings.Contains(index, "-") {
+            int_indexes = append(int_indexes, parseIndexesRange(length, index)...)
+            continue
+        }
         int_index, err := strconv.ParseInt(index, 10, 32)
         if err != nil {
             Error("Index '%s' is not integer!", index)
@@ -43,3 +74,5 @@ func SelectFromList(length int) []int {
     }
     return int_indexes
 }
+
+

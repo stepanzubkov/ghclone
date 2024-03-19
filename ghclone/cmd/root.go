@@ -17,16 +17,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
+	"fmt"
 	"os"
-    "fmt"
+
+	"net/http"
 
 	"github.com/spf13/cobra"
-    "net/http"
 
-    "ghclone/services"
+	"ghclone/general"
+	"ghclone/services"
 )
-
-
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -35,8 +35,6 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: func(cmd *cobra.Command, args []string) {
-        list := services.SelectFromList(17)
-        return
         root_args := services.ParseRootCmdArgs(cmd, args)
 
         response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
@@ -55,9 +53,11 @@ Repositories can be filtered.`,
         if root_args.Choose {
             for index, value := range repos {
                 repo := value.(map[string]any)
-                fmt.Printf("(%n) %s", index, repo["name"].(string))
+                fmt.Printf("(%v) %v\n", index, repo["name"].(string))
             }
-            fmt.Print("Choose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
+            fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
+            chosen_indexes := services.SelectFromList(len(repos))
+            repos = general.FilterByIndexes(repos, chosen_indexes)
         }
         fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
         var answer string
