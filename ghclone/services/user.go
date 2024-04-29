@@ -21,11 +21,16 @@ import (
 )
 
 
-/* Checks if Github User with `username` exists and exits application with error if not*/
-func CheckIfUserExists(username string) {
+/*
+Requests for user repos. If user does not exist - print error and exit.
+If user exists - return decoded repos slice.
+*/
+func GetUserRepos(username string) []any {
     response, err := http.Get("https://api.github.com/users/" + username + "/repos")
     CheckIfError(err)
     if response.StatusCode == 404 {
         Error("User not found!")
     }
+    repos := DecodeJsonResponse(response)
+    return repos
 }

@@ -49,9 +49,8 @@ func Execute() {
 func MainCommand(cmd *cobra.Command, args []string) {
     root_args := services.ParseRootCmdArgs(cmd, args)
 
-    services.CheckIfUserExists(root_args.Name)
+    repos := services.GetUserRepos(root_args.Name)
 
-    repos := services.DecodeJsonResponse(response)
     if root_args.Latest && root_args.Choose {
         services.Error("Pass --latest or --choose flag, not both!")
     }
@@ -74,13 +73,14 @@ func MainCommand(cmd *cobra.Command, args []string) {
     if answer != "y" {
         return
     }
+    var err error
     if root_args.Dir == "" {
         root_args.Dir, err = os.Getwd()
         services.CheckIfError(err)
     }
 
     services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
-},
+}
 
 
 func init() {
