@@ -49,11 +49,8 @@ func Execute() {
 func MainCommand(cmd *cobra.Command, args []string) {
     root_args := services.ParseRootCmdArgs(cmd, args)
 
-    response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
-    services.CheckIfError(err)
-    if response.StatusCode == 404 {
-        services.Error("User not found!")
-    }
+    services.CheckIfUserExists(root_args.Name)
+
     repos := services.DecodeJsonResponse(response)
     if root_args.Latest && root_args.Choose {
         services.Error("Pass --latest or --choose flag, not both!")
