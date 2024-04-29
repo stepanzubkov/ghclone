@@ -20,8 +20,6 @@ import (
 	"fmt"
 	"os"
 
-	"net/http"
-
 	"github.com/spf13/cobra"
 
 	"ghclone/general"
