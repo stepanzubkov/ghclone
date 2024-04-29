@@ -55,18 +55,12 @@ func MainCommand(cmd *cobra.Command, args []string) {
         services.Error("Pass --latest or --choose flag, not both!")
     }
     if root_args.Latest {
-        latest_repo := services.GetLatestRepository(repos)
-        repos = []any{latest_repo}
+        repos = FilterLatestRepo(repos)
     }
     if root_args.Choose {
-        for index, value := range repos {
-            repo := value.(map[string]any)
-            fmt.Printf("(%v) %v\n", index, repo["name"].(string))
-        }
-        fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
-        chosen_indexes := services.SelectFromList(len(repos))
-        repos = general.FilterByIndexes(repos, chosen_indexes)
+        repos = FilterChooseRepos(repos)
     }
+
     fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
     var answer string
     fmt.Scanln(&answer)
@@ -82,9 +76,26 @@ func MainCommand(cmd *cobra.Command, args []string) {
     services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
 }
 
+func FilterLatestRepo(repos []any) []any {
+    latest_repo := services.GetLatestRepository(repos)
+    repos = []any{latest_repo}
+    return repos
+}
+
+func FilterChooseRepos(repos []any) []any {
+    for index, value := range repos {
+        repo := value.(map[string]any)
+        fmt.Printf("(%v) %v\n", index, repo["name"].(string))
+    }
+    fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
+    chosen_indexes := services.SelectFromList(len(repos))
+    repos = general.FilterByIndexes(repos, chosen_indexes)
+    return repos
+}
+
 
 func init() {
-	// Here you will define your flags and configuration settings.
+	// Here you will define your flags nd configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
