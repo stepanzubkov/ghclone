@@ -34,44 +34,7 @@ var rootCmd = &cobra.Command{
 	Short: "Clone multiple repositories from github.",
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
-	Run: func(cmd *cobra.Command, args []string) {
-        root_args := services.ParseRootCmdArgs(cmd, args)
-
-        response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
-        services.CheckIfError(err)
-        if response.StatusCode == 404 {
-            services.Error("User not found!")
-        }
-        repos := services.DecodeJsonResponse(response)
-        if root_args.Latest && root_args.Choose {
-            services.Error("Pass --latest or --choose flag, not both!")
-        }
-        if root_args.Latest {
-            latest_repo := services.GetLatestRepository(repos)
-            repos = []any{latest_repo}
-        }
-        if root_args.Choose {
-            for index, value := range repos {
-                repo := value.(map[string]any)
-                fmt.Printf("(%v) %v\n", index, repo["name"].(string))
-            }
-            fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
-            chosen_indexes := services.SelectFromList(len(repos))
-            repos = general.FilterByIndexes(repos, chosen_indexes)
-        }
-        fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
-        var answer string
-        fmt.Scanln(&answer)
-        if answer != "y" {
-            return
-        }
-        if root_args.Dir == "" {
-            root_args.Dir, err = os.Getwd()
-            services.CheckIfError(err)
-        }
-
-        services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
-    },
+	Run: MainCommand,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -82,6 +45,46 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+
+func MainCommand(cmd *cobra.Command, args []string) {
+    root_args := services.ParseRootCmdArgs(cmd, args)
+
+    response, err := http.Get("https://api.github.com/users/" + root_args.Name + "/repos")
+    services.CheckIfError(err)
+    if response.StatusCode == 404 {
+        services.Error("User not found!")
+    }
+    repos := services.DecodeJsonResponse(response)
+    if root_args.Latest && root_args.Choose {
+        services.Error("Pass --latest or --choose flag, not both!")
+    }
+    if root_args.Latest {
+        latest_repo := services.GetLatestRepository(repos)
+        repos = []any{latest_repo}
+    }
+    if root_args.Choose {
+        for index, value := range repos {
+            repo := value.(map[string]any)
+            fmt.Printf("(%v) %v\n", index, repo["name"].(string))
+        }
+        fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
+        chosen_indexes := services.SelectFromList(len(repos))
+        repos = general.FilterByIndexes(repos, chosen_indexes)
+    }
+    fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
+    var answer string
+    fmt.Scanln(&answer)
+    if answer != "y" {
+        return
+    }
+    if root_args.Dir == "" {
+        root_args.Dir, err = os.Getwd()
+        services.CheckIfError(err)
+    }
+
+    services.CloneRepositories(repos, root_args.Dir, root_args.Ssh)
+},
+
 
 func init() {
 	// Here you will define your flags and configuration settings.

@@ -17,6 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package general
 
 
+/* Remove duplicates from slice */
 func RemoveDuplicateValues(intSlice []int) []int {
     keys := make(map[int]bool)
     list := []int{}
@@ -31,9 +32,9 @@ func RemoveDuplicateValues(intSlice []int) []int {
 }
 
 
+/* Filters elements from `slice` only with indexes presented in `indexes` slice 
+Works properly only with valid indexes */
 func FilterByIndexes[T any](slice []T, indexes []int) []T {
-    /* Filters elements from `slice` only with indexes presented in `indexes` slice 
-    Works properly only with valid indexes */
     filtered_slice := []T{}
     for _, index := range indexes {
         filtered_slice = append(filtered_slice, slice[index])

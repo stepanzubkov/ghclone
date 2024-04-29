@@ -18,15 +18,11 @@ package services
 
 import (
 	"encoding/json"
-	"io/fs"
 	"net/http"
 	"os"
 	"path"
-    "strings"
-	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 )
 
 
@@ -62,38 +58,4 @@ func CloneRepositories(repos []any, directory string, ssh bool) {
         }
         CheckIfError(err)
     }
-}
-
-func getPublicKeys() *ssh.PublicKeys {
-    private_key_file := findSshKeyFile()
-    _, err := os.Stat(private_key_file)
-	if err != nil {
-		Error("Ssh private key file is not found!")
-	}
-
-	public_keys, err := ssh.NewPublicKeysFromFile("git", private_key_file, "")
-    CheckIfError(err)
-    return public_keys
-}
-
-func findSshKeyFile() string {
-    homedir, _ := os.UserHomeDir()
-    files := glob(path.Join(homedir, ".ssh"), func(s string) bool {
-        return strings.HasPrefix(filepath.Base(s), "id_") && filepath.Ext(s) == ""
-    })
-    if len(files) != 1 {
-        Error("Can't choose ssh private key file!")
-    }
-    return files[0]
-}
-
-func glob(root string, fn func(string)bool) []string {
-   var files []string
-   filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
-      if fn(s) {
-         files = append(files, s)
-      }
-      return nil
-   })
-   return files
 }
