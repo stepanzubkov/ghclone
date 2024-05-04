@@ -46,12 +46,10 @@ func Execute() {
 
 func MainCommand(cmd *cobra.Command, args []string) {
     root_args := services.ParseRootCmdArgs(cmd, args)
+    services.ValidateRootCmdArgs(root_args)
 
     repos := services.GetUserRepos(root_args.Name)
 
-    if root_args.Latest && root_args.Choose {
-        services.Error("Pass --latest or --choose flag, not both!")
-    }
     if root_args.Latest {
         repos = FilterLatestRepo(repos)
     }

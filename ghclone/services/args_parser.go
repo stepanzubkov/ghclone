@@ -45,3 +45,9 @@ func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
     }
     return &root_args
 }
+
+func ValidateRootCmdArgs(root_args *models.RootArgs) {
+    if root_args.Latest && root_args.Choose {
+        Error("Pass --latest or --choose flag, not both!")
+    }
+}
