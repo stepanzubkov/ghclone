@@ -27,7 +27,7 @@ import (
 
 
 
-func DecodeJsonResponse(response *http.Response) []any {
+func decodeJsonResponse(response *http.Response) []any {
     var result []any
     decoder := json.NewDecoder(response.Body)
     decoder.Decode(&result)
