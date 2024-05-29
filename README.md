@@ -1,15 +1,42 @@
-# ghclone
+# ghclone :octocat:
 
-With this CLI utility you can clone multiple repositores (e.g. all user's repositores) with one command.
+**Ghclone** allows clone multiple repositories by one command.
 
 ## Examples
 
 Clone all user's repositores:
 ```
-go run main.go stepanzubkov
+ghclone stepanzubkov
 ```
 
 Clone only latest created repository:
 ```
-go run main.go --latest stepanzubkov
+ghclone --latest stepanzubkov
 ```
+
+Choose repos and clone them:
+```
+ghclone --choose stepanzubkov
+```
+
+To clone repos with *ssh*, add `--ssh` flag:
+```
+ghclone --ssh stepanzubkov
+```
+
+To specify *directory*, add `--dir` flag:
+```
+ghclone --dir /tmp stepanzubkov
+```
+
+## Installation
+### Build from source
+Clone this repo, then:
+```
+cd ghclone/ghclone
+make
+sudo make install
+```
+
+## Contribution
+Feel free to contribute to this project. Leave issues and send PRs. Ghclone is licensed under **GPLv3-or-later** license.
