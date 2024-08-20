@@ -34,7 +34,6 @@ var rootCmd = &cobra.Command{
 Repositories can be filtered.`,
 	Run: MainCommand,
 }
-
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -43,6 +42,7 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+
 
 func MainCommand(cmd *cobra.Command, args []string) {
     root_args := services.ParseRootCmdArgs(cmd, args)
@@ -101,7 +101,6 @@ func init() {
     rootCmd.Flags().BoolP("latest", "l", false, "Clone 1 latest repository.")
     rootCmd.Flags().BoolP("ssh", "s", false, "Clone via ssh")
     rootCmd.Flags().BoolP("choose", "c", false, "Choose multiple repos to clone from list")
-
 }
 
 
