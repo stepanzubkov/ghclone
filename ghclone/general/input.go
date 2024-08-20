@@ -26,7 +26,7 @@ import (
 )
 
 // Get password input from console, hiding user input
-func getPasswordInput(prompt string) string {
+func GetPasswordInput(prompt string) string {
     fmt.Print(prompt)
     password, err := term.ReadPassword(int(os.Stdin.Fd()))
     if err != nil {

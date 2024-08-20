@@ -1,13 +1,15 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
+
+	"ghclone/general"
 )
 
 // loginCmd represents the login command
@@ -21,7 +23,15 @@ It's used for cloning private repositories.`,
 
 
 func LoginCommand(cmd *cobra.Command, args []string) {
-    fmt.Println("Login command called")
+    var apiToken string
+    for {
+        apiToken = general.GetPasswordInput("Paste github API auth token: ")
+        if strings.HasPrefix(apiToken, "ghp_") {
+            break
+        }
+        fmt.Println("Your input doesn't look like a github token! It should has prefix 'ghp_'")
+    }
+    fmt.Println(apiToken)
 }
 
 func init() {
