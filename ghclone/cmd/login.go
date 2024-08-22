@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"ghclone/general"
+    "ghclone/services"
 )
 
 // loginCmd represents the login command
@@ -31,8 +32,12 @@ func LoginCommand(cmd *cobra.Command, args []string) {
         }
         fmt.Println("Your input doesn't look like a github token! It should has prefix 'ghp_'")
     }
-    fmt.Println(apiToken)
+    cfg := services.ParseConfig()
+    cfg.GithubAccessToken = apiToken
+    cfg.WriteConfig()
+    fmt.Println("Successfully logged in!")
 }
+
 
 func init() {
 	rootCmd.AddCommand(loginCmd)

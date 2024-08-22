@@ -3,6 +3,7 @@ module ghclone
 go 1.22.5
 
 require (
+	github.com/BurntSushi/toml v1.4.0
 	github.com/go-git/go-git/v5 v5.10.1
 	github.com/spf13/cobra v1.8.1
 	golang.org/x/term v0.14.0
