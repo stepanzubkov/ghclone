@@ -37,10 +37,6 @@ type Config struct {
 func ParseConfig() *Config {
     cfg := &Config{}
     fullConfigDir :=  filepath.Join(os.ExpandEnv("$HOME"), configDir)
-    err := os.MkdirAll(fullConfigDir, 0755)
-    if err != nil {
-        return cfg
-    }
     toml.DecodeFile(filepath.Join(fullConfigDir, configFile), cfg)
     return cfg
 }
