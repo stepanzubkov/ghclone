@@ -34,7 +34,7 @@ func LoginCommand(cmd *cobra.Command, args []string) {
         }
         cfg := services.ParseConfig()
         cfg.GithubAccessToken = apiToken
-        if services.CheckLogin(cfg) != 200 {
+        if !services.CheckAccessToken(cfg) {
             fmt.Println("Access token is invalid!")
             continue
         } else {
