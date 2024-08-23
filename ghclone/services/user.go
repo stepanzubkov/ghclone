@@ -34,3 +34,10 @@ func GetUserRepos(username string) []any {
     repos := decodeJsonResponse(response)
     return repos
 }
+
+
+// Checks if access token is valid via github api and return status code
+func CheckLogin(cfg *Config) int {
+    response := makeApiRequest("user/repos", cfg)
+    return response.StatusCode
+}

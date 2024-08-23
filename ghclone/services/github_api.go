@@ -18,6 +18,7 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -25,6 +26,9 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
+const (
+    githubApiUrl = "https://api.github.com/"
+)
 
 
 func decodeJsonResponse(response *http.Response) []any {
@@ -33,6 +37,25 @@ func decodeJsonResponse(response *http.Response) []any {
     decoder.Decode(&result)
     return result
 }
+
+
+// Make request to github api with choosen apiMethod and authorization
+func makeApiRequest(apiMethod string, cfg *Config) *http.Response {
+    request, err := http.NewRequest("GET", fmt.Sprintf("%v%v", githubApiUrl, apiMethod), nil)
+    if err != nil {
+        Error("Error creating request: %v", err)
+    }
+
+    if cfg.GithubAccessToken != "" {
+        request.Header.Set("Authorization", "Bearer " + cfg.GithubAccessToken)
+    }
+
+    response, err := http.DefaultClient.Do(request)
+    if err != nil {
+        Error("Error sending request: %v", err)
+    }
+    return response
+} 
 
 
 func CloneRepositories(repos []any, directory string, ssh bool) {

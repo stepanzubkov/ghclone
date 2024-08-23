@@ -25,15 +25,22 @@ It's used for cloning private repositories.`,
 
 func LoginCommand(cmd *cobra.Command, args []string) {
     var apiToken string
+    var cfg *services.Config
     for {
         apiToken = general.GetPasswordInput("Paste github API auth token: ")
-        if strings.HasPrefix(apiToken, "ghp_") {
+        if !strings.HasPrefix(apiToken, "ghp_") {
+            fmt.Println("Your input doesn't look like a github token! It should has prefix 'ghp_'")
+            continue
+        }
+        cfg := services.ParseConfig()
+        cfg.GithubAccessToken = apiToken
+        if services.CheckLogin(cfg) != 200 {
+            fmt.Println("Access token is invalid!")
+            continue
+        } else {
             break
         }
-        fmt.Println("Your input doesn't look like a github token! It should has prefix 'ghp_'")
     }
-    cfg := services.ParseConfig()
-    cfg.GithubAccessToken = apiToken
     cfg.WriteConfig()
     fmt.Println("Successfully logged in!")
 }
