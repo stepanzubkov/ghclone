@@ -33,6 +33,7 @@ var rootCmd = &cobra.Command{
 	Long: `ghclone can clone multiple repositories from your github account or other.
 Repositories can be filtered.`,
 	Run: MainCommand,
+    TraverseChildren: true,
 }
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -48,7 +49,8 @@ func MainCommand(cmd *cobra.Command, args []string) {
     root_args := services.ParseRootCmdArgs(cmd, args)
     services.ValidateRootCmdArgs(root_args)
 
-    repos := services.GetUserRepos(root_args.Name)
+    cfg := services.ParseConfig()
+    repos := services.GetUserRepos(root_args.Name, cfg)
 
     if root_args.Latest {
         repos = FilterLatestRepo(repos)

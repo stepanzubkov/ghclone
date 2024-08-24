@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"ghclone/general"
-    "ghclone/services"
+	"ghclone/services"
 )
 
 // loginCmd represents the login command
@@ -23,15 +23,15 @@ It's used for cloning private repositories.`,
 
 
 func LoginCommand(cmd *cobra.Command, args []string) {
-    var apiToken string
-    var cfg *services.Config
+    apiToken := ""
+    cfg := &services.Config{}
     for {
         apiToken = general.GetPasswordInput("Paste github API auth token: ")
         if !strings.HasPrefix(apiToken, "ghp_") {
             services.PrintError("Your input doesn't look like a github token! It should has prefix 'ghp_'")
             continue
         }
-        cfg := services.ParseConfig()
+        cfg = services.ParseConfig()
         cfg.GithubAccessToken = apiToken
         if !services.CheckAccessToken(cfg) {
             services.PrintError("Access token is invalid!")

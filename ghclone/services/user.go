@@ -25,9 +25,13 @@ import (
 Requests for user repos. If user does not exist - print error and exit.
 If user exists - return decoded repos slice.
 */
-func GetUserRepos(username string) []any {
-    response, err := http.Get("https://api.github.com/users/" + username + "/repos?per_page=100")
-    CheckIfError(err)
+func GetUserRepos(username string, cfg *Config) []any {
+    var response *http.Response
+    if cfg.GithubAccessToken != "" {
+        response = makeApiRequest("user/repos?per_page=100", cfg)
+    } else {
+        response = makeApiRequest("users/" + username + "/repos?per_page=100", cfg)
+    }
     if response.StatusCode == 404 {
         PrintFatal("User not found!")
     }
