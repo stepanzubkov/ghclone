@@ -38,7 +38,7 @@ func SelectFromList(length int) []int {
 func parseIndexesRange(length int, indexes_range string) []int {
     range_borders := strings.Split(indexes_range, "-")
     if len(range_borders) != 2 {
-        Error("Invalid indexes range: '%s'", indexes_range)
+        PrintError("Invalid indexes range: '%s'", indexes_range)
     }
     int_range_borders := strSliceToIntSlice(length, range_borders)
 
@@ -65,10 +65,10 @@ func strSliceToIntSlice(length int, str_slice []string) []int {
         }
         int_index, err := strconv.ParseInt(index, 10, 32)
         if err != nil {
-            Error("Index '%s' is not integer!", index)
+            PrintError("Index '%s' is not integer!", index)
         }
         if int_index < 0 || int(int_index) > length-1 {
-            Error("Index %s is out of range", index)
+            PrintError("Index %s is out of range", index)
         }
         int_indexes = append(int_indexes, int(int_index))
     }

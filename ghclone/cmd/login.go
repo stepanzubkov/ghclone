@@ -1,10 +1,9 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Stepan Zubkov <zubkovbackend@gmail.com>
 */
 package cmd
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -29,20 +28,20 @@ func LoginCommand(cmd *cobra.Command, args []string) {
     for {
         apiToken = general.GetPasswordInput("Paste github API auth token: ")
         if !strings.HasPrefix(apiToken, "ghp_") {
-            fmt.Println("Your input doesn't look like a github token! It should has prefix 'ghp_'")
+            services.PrintError("Your input doesn't look like a github token! It should has prefix 'ghp_'")
             continue
         }
         cfg := services.ParseConfig()
         cfg.GithubAccessToken = apiToken
         if !services.CheckAccessToken(cfg) {
-            fmt.Println("Access token is invalid!")
+            services.PrintError("Access token is invalid!")
             continue
         } else {
             break
         }
     }
     cfg.WriteConfig()
-    fmt.Println("Successfully logged in!")
+    services.PrintSuccess("Successfully logged in!")
 }
 
 

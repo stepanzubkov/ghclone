@@ -29,7 +29,7 @@ func GetUserRepos(username string) []any {
     response, err := http.Get("https://api.github.com/users/" + username + "/repos?per_page=100")
     CheckIfError(err)
     if response.StatusCode == 404 {
-        Error("User not found!")
+        PrintFatal("User not found!")
     }
     repos := decodeJsonResponse(response)
     return repos
