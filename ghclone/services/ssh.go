@@ -29,7 +29,7 @@ func getPublicKeys() *ssh.PublicKeys {
     private_key_file := findSshKeyFile()
     _, err := os.Stat(private_key_file)
     if err != nil {
-        PrintError("Ssh private key file is not found!")
+        PrintFatal("Ssh private key file is not found!")
     }
 
     public_keys, err := ssh.NewPublicKeysFromFile("git", private_key_file, "")
@@ -43,7 +43,7 @@ func findSshKeyFile() string {
         return strings.HasPrefix(filepath.Base(s), "id_") && filepath.Ext(s) == ""
     })
     if len(files) != 1 {
-        PrintError("Can't choose ssh private key file!")
+        PrintFatal("Can't choose ssh private key file!")
     }
     return files[0]
 }

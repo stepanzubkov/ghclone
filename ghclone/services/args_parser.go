@@ -32,7 +32,7 @@ func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
     CheckIfError(err)
 
     if len(args) != 1 {
-        PrintError("Only one argument is allowed!")
+        PrintFatal("Only one argument is allowed!")
     }
     var github_username string = args[0]
 
@@ -48,6 +48,6 @@ func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
 
 func ValidateRootCmdArgs(root_args *models.RootArgs) {
     if root_args.Latest && root_args.Choose {
-        PrintError("Pass --latest or --choose flag, not both!")
+        PrintFatal("Pass --latest or --choose flag, not both!")
     }
 }

@@ -43,7 +43,7 @@ func decodeJsonResponse(response *http.Response) []any {
 func makeApiRequest(apiMethod string, cfg *Config) *http.Response {
     request, err := http.NewRequest("GET", fmt.Sprintf("%v%v", githubApiUrl, apiMethod), nil)
     if err != nil {
-        PrintError("Error creating request: %v", err)
+        PrintFatal("Error creating request: %v", err)
     }
 
     if cfg.GithubAccessToken != "" {
@@ -52,7 +52,7 @@ func makeApiRequest(apiMethod string, cfg *Config) *http.Response {
 
     response, err := http.DefaultClient.Do(request)
     if err != nil {
-        PrintError("Error sending request: %v", err)
+        PrintFatal("Error sending request: %v", err)
     }
     return response
 } 
