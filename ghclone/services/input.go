@@ -18,6 +18,7 @@ package services
 
 import (
 	"bufio"
+	"fmt"
 	"ghclone/general"
 	"os"
 	"strconv"
@@ -55,7 +56,7 @@ func parseIndexesRange(length int, indexes_range string) []int {
     return expanded_range
 }
 
-
+// TODO: Choose other name...
 func strSliceToIntSlice(length int, str_slice []string) []int {
     var int_indexes []int
     for _, index := range str_slice {
@@ -76,3 +77,16 @@ func strSliceToIntSlice(length int, str_slice []string) []int {
 }
 
 
+func InputYesNo(label string, defaultYes bool) bool {
+    fmt.Print(label)
+    var answer string
+    fmt.Scanln(&answer)
+    answer = strings.ToLower(strings.TrimSuffix(answer, "\n"))
+    if answer == "" {
+        return defaultYes
+    }
+    if answer == "y" || answer == "yes" {
+        return true
+    }
+    return false
+}

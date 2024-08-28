@@ -59,10 +59,8 @@ func MainCommand(cmd *cobra.Command, args []string) {
         repos = FilterChooseRepos(repos)
     }
 
-    fmt.Printf("Found %d repositories. Continue (y/n)? ", len(repos))
-    var answer string
-    fmt.Scanln(&answer)
-    if answer != "y" {
+    continue_ := services.InputYesNo(fmt.Sprintf("Found %d repositories. Continue (Y/n)? ", len(repos)), true)
+    if !continue_ {
         return
     }
     var err error

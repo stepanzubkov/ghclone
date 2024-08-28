@@ -35,3 +35,4 @@ func GetPasswordInput(prompt string) string {
     fmt.Println()
     return string(password)
 }
+
