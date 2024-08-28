@@ -81,21 +81,21 @@ func FilterLatestRepo(repos []any) []any {
     return repos
 }
 
-// TODO: Move color output to output service
 func FilterChooseRepos(repos []any) []any {
     privateRepos := false
     for index, value := range repos {
         repo := value.(map[string]any)
         if repo["visibility"].(string) == "private" {
             privateRepos = true
-            fmt.Printf("(%v) \x1b[31;01m%v\x1b[0m\n", index, repo["name"].(string))
+            fmt.Printf("(%v) %v\n", index, services.Red(repo["name"].(string)))
+        } else {
+            fmt.Printf("(%v) %v\n", index, repo["name"].(string))
         }
-        fmt.Printf("(%v) %v\n", index, repo["name"].(string))
     }
     if privateRepos {
-        fmt.Println("Private repositories marked as \x1b[31;01mred\x1b[0m.")
+        fmt.Printf("Private repositories marked as %v.\n", services.Red("red"))
     }
-    fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example):")
+    fmt.Print("\nChoose one or multiple repos from list (0, 1, 1 2 3, 1-10 for example): ")
     chosen_indexes := services.SelectFromList(len(repos))
     repos = general.FilterByIndexes(repos, chosen_indexes)
     return repos

@@ -27,14 +27,15 @@ const (
     green = "\x1b[32;1m"
     yellow = "\x1b[33;1m"
 
-    cclear = "\x1b[0m\n"
+    cclear = "\x1b[0m"
 )
 
 // Print message formatted with fmt.Printf and specified ANSI color sequence
 func printFormatted(color string, format string, a ...any) {
-    fmt.Printf(color + "%s" + cclear, fmt.Sprintf(format, a...))
+    fmt.Printf(color + "%s" + cclear + "\n", fmt.Sprintf(format, a...))
 }
 
+// TODO: Print to STDERR
 // Print formatted message with error style (red fg)
 func PrintError(format string, a ...any) {
     printFormatted(red, format, a...)
@@ -63,4 +64,9 @@ func PrintSuccess(format string, a ...any) {
 // Print formatted message with warning style (yellow fg)
 func PrintWarning(format string, a ...any) {
     printFormatted(yellow, format, a...)
+}
+
+// Wraps string in red fg
+func Red(s string) string {
+    return red + s + cclear
 }
