@@ -7,3 +7,6 @@ ghclone:
 
 install: ghclone
 	install -v ghclone ${PREFIX}/bin
+
+clear:
+	rm ghclone
