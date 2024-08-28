@@ -46,10 +46,10 @@ func Execute() {
 
 
 func MainCommand(cmd *cobra.Command, args []string) {
-    root_args := services.ParseRootCmdArgs(cmd, args)
+    cfg := services.ParseConfig()
+    root_args := services.ParseRootCmdArgs(cmd, args, cfg)
     services.ValidateRootCmdArgs(root_args)
 
-    cfg := services.ParseConfig()
     repos := services.GetUserRepos(root_args.Name, cfg)
 
     if root_args.Latest {

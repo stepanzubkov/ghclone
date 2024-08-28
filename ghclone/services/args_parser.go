@@ -20,7 +20,7 @@ import (
     "ghclone/models"
 )
 
-func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
+func ParseRootCmdArgs(cmd *cobra.Command, args []string, cfg *Config) *models.RootArgs {
     dir, err := cmd.Flags().GetString("dir")
     CheckIfError(err)
     latest, err := cmd.Flags().GetBool("latest")
@@ -31,12 +31,18 @@ func ParseRootCmdArgs(cmd *cobra.Command, args []string) *models.RootArgs {
     ssh, err := cmd.Flags().GetBool("ssh")
     CheckIfError(err)
 
-    if len(args) != 1 {
-        PrintFatal("Only one argument is allowed!")
+    if len(args) == 0 && cfg.DefaultUsername == "" {
+        PrintFatal("Pass username or specify default username in config!")
     }
-    var github_username string = args[0]
+    if len(args) > 1 {
+        PrintFatal("You can pass only 0 or 1 arguments!")
+    }
+    github_username := cfg.DefaultUsername
+    if len(args) == 1 {
+        github_username = args[0]
+    }
 
-    var root_args models.RootArgs = models.RootArgs{
+    root_args := models.RootArgs{
         Name: github_username,
         Dir: dir,
         Latest: latest,

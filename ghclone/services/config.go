@@ -31,6 +31,7 @@ const (
 
 type Config struct {
     GithubAccessToken string
+    DefaultUsername   string
 }
 
 // Parses .toml config file to Config struct and returns it. If any error occured - returns default config
