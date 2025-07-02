@@ -28,9 +28,9 @@ If user exists - return decoded repos slice.
 func GetUserRepos(username string, cfg *Config) []any {
     var response *http.Response
     if cfg.GithubAccessToken != "" && (username == "" || username == cfg.DefaultUsername) {
-        response = makeApiRequest("user/repos?per_page=100", cfg)
+        response = makeApiRequest("user/repos?per_page=100&sort=name", cfg)
     } else {
-        response = makeApiRequest("users/" + username + "/repos?per_page=100", cfg)
+        response = makeApiRequest("users/" + username + "/repos?per_page=100&sort=name", cfg)
     }
     if response.StatusCode == 404 {
         PrintFatal("User not found!")
